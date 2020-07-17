@@ -1,0 +1,99 @@
+<%- include('./partials/head.ejs') %> 
+    <%- include('./partials/nav.ejs') %> 
+    <div class="content">
+        <form class="details-item" action="/blogs" method="PUT">
+        <small class="display-none" id="edit-mode">edit mode</small>
+        <input style="display: none;" type="hidden" name="default-val" class="default-val" value="<%= blog.title %> ">
+        <input style="display: none;" type="hidden" name="default-val" class="default-val" value="<%= blog.snippet %> ">
+        <input style="display: none;" type="hidden" name="default-val" class="default-val" value="<%= blog.body %> ">
+            <input required readonly autofocus autocomplete="false" type="text" name="title" id="title-edit" value="<%= blog.title %> ">
+            <input required readonly autocomplete="false" type="text" name="snippet" id="snippet-edit" value="<%= blog.snippet %> ">
+            <input required readonly autocomplete="false" type="text" name="body" id="body-edit" value="<%= blog.body %> ">
+            <div class="link-container">
+                <a id="edit-blog">edit</a>
+                <a data-doc="<%= blog._id %>" id="delete-blog">delete</a>
+                <!-- only display when click edit button -->
+                <a class="display-none" id="cancel-edit-blog">cancel edit</a>
+                <a class="display-none" data-doc="<%= blog._id %>" id="submit-edit-blog">edit</a>
+            </div>
+        </form>
+    </div>
+</body>
+<script>
+    //declare const that contain default value
+    const blogs = [...document.querySelectorAll('.default-val')]; 
+    //spread those array to const
+    const [title, snippet, body] = [...blogs];
+
+    const editMode = document.querySelector('#edit-mode');
+    const editLink = document.querySelector('a#edit-blog');
+    const delLink = document.querySelector('a#delete-blog');
+    const submitEdit = document.querySelector('a#submit-edit-blog');
+    const cancelEdit = document.querySelector('a#cancel-edit-blog');
+    const titleEdit = document.querySelector('input#title-edit');
+    const snippetEdit = document.querySelector('input#snippet-edit');
+    const bodyEdit = document.querySelector('input#body-edit');
+
+    editLink.addEventListener('click', (e) => {
+        editLink.classList.add('display-none');
+        delLink.classList.add('display-none');
+        editMode.classList.remove('display-none');
+        submitEdit.classList.remove('display-none');
+        cancelEdit.classList.remove('display-none');
+        
+        titleEdit.removeAttribute('readonly');
+        titleEdit.classList.add('border-bottom');
+        snippetEdit.removeAttribute('readonly');
+        snippetEdit.classList.add('border-bottom');
+        bodyEdit.removeAttribute('readonly');
+        bodyEdit.classList.add('border-bottom');
+    });
+    
+    cancelEdit.addEventListener('click', (e) => {
+        editLink.classList.remove('display-none');
+        delLink.classList.remove('display-none');
+        editMode.classList.add('display-none');
+        submitEdit.classList.add('display-none');
+        cancelEdit.classList.add('display-none');
+
+        //reset to default value
+        titleEdit.value = title.value;
+        snippetEdit.value = snippet.value;
+        bodyEdit.value = body.value;
+        //back to defaul mode
+        titleEdit.setAttribute('readonly', "true");
+        titleEdit.classList.remove('border-bottom');
+        snippetEdit.setAttribute('readonly', "true");
+        snippetEdit.classList.remove('border-bottom');
+        bodyEdit.setAttribute('readonly', "true");
+        bodyEdit.classList.remove('border-bottom');
+    })
+
+//update/edit data
+    submitEdit.addEventListener('click', (e) => {
+        console.log(body)
+        const endpoint = `/blogs/${submitEdit.dataset.doc}`;
+        fetch(endpoint, {
+            method: 'PUT',
+            tes: "dasd",
+            headers: { 'Content-Type': 'application/json'},
+            body: JSON.stringify({
+                title: titleEdit.value,
+                snippet : snippetEdit.value,
+                body: bodyEdit.value
+            })
+        }).then((response) => response.json()).then((data) => {
+            console.log(data);
+            window.location.href = data.redirect}).catch(err => console.log(err));
+    });
+//delete data
+    delLink.addEventListener('click', (e) => {
+        const endpoint = `/blogs/${delLink.dataset.doc}`;
+        fetch(endpoint, {
+            method: 'DELETE'
+        }).then((response) => response.json())
+        .then((data) => window.location.href = data.redirect)
+        .catch((err) => console.log(err));
+    })
+</script>
+</html>

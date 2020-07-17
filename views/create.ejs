@@ -1,0 +1,15 @@
+<%- include('./partials/head.ejs') %> 
+<%- include('./partials/nav.ejs') %>    
+    <div class="content">
+        <form class="create-blog" action="/blogs" method="POST">
+            <h2>New blog</h2>
+            <label for="title">blog title</label>
+            <input type="text" name="title" id="title" required>
+            <label for="snippet">blog snippet</label>
+            <input type="text" name="snippet" id="snippet" required>
+            <label for="body">blog body</label>
+            <textarea name="body" id="body" required ></textarea>
+            <button type="submit">submit</button>
+        </form>
+    </div>
+<%- include('./partials/footer.ejs') %> 
